@@ -1,0 +1,20 @@
+---
+- name: Create remote user
+  hosts: cnt8
+  become: true
+  remote_user: root
+  vars:
+    password: password
+  tasks: 
+    - name: Create user user1
+      user:
+        name: user1
+        password: "{{ password | password_hash('sha512') }}"
+        shell: /bin/bash
+        groups: wheel
+        append: yes
+  
+    - name: Added authorized key from id_rsa.pub
+      authorized_key:
+        user: user1
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
